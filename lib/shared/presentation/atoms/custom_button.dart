@@ -11,8 +11,9 @@ class CustomButton extends StatelessWidget {
       this.type = CustomBtnType.FILLED,});
 
   factory CustomButton.link(
-      {required String text, VoidCallback? onTap, CustomBtnType type = CustomBtnType.LINK}) {
+      {Key? key, required String text, VoidCallback? onTap, CustomBtnType type = CustomBtnType.LINK}) {
     return CustomButton(
+      key: key,
       text: text,
       onTap: onTap,
       type: type,

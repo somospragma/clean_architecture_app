@@ -8,7 +8,7 @@ import '../../features/auth/presentation/pages/sign_up_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 
 // GoRouter configuration
-final Provider<GoRouter> appRouterProvider = Provider<GoRouter>((ProviderRef<GoRouter> ref) {
+final Provider<GoRouter> appRouterProvider = Provider<GoRouter>((Ref<GoRouter> ref) {
   return GoRouter(
     initialLocation: '/',
     routes: <RouteBase>[

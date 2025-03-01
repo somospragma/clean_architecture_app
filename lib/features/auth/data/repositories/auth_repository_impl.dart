@@ -8,15 +8,17 @@ import '../../../../core/network/error/failures.dart';
 import '../../../../core/utils/constants/network_paths.dart';
 import '../../../../shared/domain/models/api_response_model.dart';
 import '../../domain/models/user_model.dart';
+import '../../domain/repositories/auth_repository.dart';
 
-final Provider<AuthRepository> authRepositoryProvider =
-    Provider<AuthRepository>((ProviderRef<AuthRepository> ref) {
-  return AuthRepository();
+final Provider<AuthRepositoryImpl> authRepositoryProvider =
+    Provider<AuthRepositoryImpl>((Ref<AuthRepositoryImpl> ref) {
+  return AuthRepositoryImpl();
 });
 
-class AuthRepository {
+class AuthRepositoryImpl implements AuthRepository{
   Dio dio = DioNetwork.appAPI;
 
+  @override
   Future<Either<Failure, ApiResponseModel<UserModel>>> logIn(
       UserModel params) async {
     try {
@@ -37,6 +39,7 @@ class AuthRepository {
     }
   }
 
+  @override
   Future<Either<Failure, ApiResponseModel<bool>>> signUp(
       UserModel params) async {
     try {
@@ -56,6 +59,7 @@ class AuthRepository {
     }
   }
 
+  @override
   Future<Either<Failure, ApiResponseModel<bool>>> resetPassword(
       UserModel params) async {
     try {

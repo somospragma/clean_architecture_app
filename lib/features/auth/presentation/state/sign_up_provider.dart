@@ -12,7 +12,7 @@ import 'sign_up_state.dart';
 final AutoDisposeStateNotifierProvider<SignUpNotifier, SignUpState>
     signUpProvider =
     StateNotifierProvider.autoDispose<SignUpNotifier, SignUpState>(
-        (AutoDisposeStateNotifierProviderRef<SignUpNotifier, SignUpState> ref) => SignUpNotifier(
+        (Ref<SignUpState> ref) => SignUpNotifier(
               authUsecase: ref.read(authUsecaseProvider),
               router: ref.read(appRouterProvider),
             ));

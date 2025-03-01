@@ -1,11 +1,11 @@
 String getLogInPath() {
-  return '4dc5143b-4de6-458d-950b-94dc4c460dbd';
+  return '6c01abcc-0c7f-407d-a6a3-169ce0be9315';
 }
 
 String getSignUpPath() {
-  return 'bb65ab48-e7ec-4b10-a782-84db192ca47c';
+  return 'b258b1de-fc48-44d9-80b3-cbdecf8f525e';
 }
 
 String getResetPasswordPath() {
-  return 'bb65ab48-e7ec-4b10-a782-84db192ca47c';
+  return 'b258b1de-fc48-44d9-80b3-cbdecf8f525e';
 }

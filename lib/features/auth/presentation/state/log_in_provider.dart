@@ -11,7 +11,7 @@ import '../../domain/usecases/auth_usecase.dart';
 import 'log_in_state.dart';
 
 final StateNotifierProvider<LogInNotifier, LogInState> logInProvider =
-    StateNotifierProvider<LogInNotifier, LogInState>((StateNotifierProviderRef<LogInNotifier, LogInState> ref) => LogInNotifier(
+    StateNotifierProvider<LogInNotifier, LogInState>((Ref<LogInState> ref) => LogInNotifier(
           authUsecase: ref.read(authUsecaseProvider),
           router: ref.read(appRouterProvider),
         ));

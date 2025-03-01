@@ -62,6 +62,7 @@ class LoginPage extends ConsumerWidget {
             Align(
               alignment: Alignment.centerRight,
               child: CustomButton.link(
+                key: const ValueKey('forgot-password_btn'),
                 text: 'Forgot Password',
                 onTap: () => context.push('/resetPassword'),
               ),
@@ -73,6 +74,7 @@ class LoginPage extends ConsumerWidget {
             ),
             const SizedBox(height: Spacing.SPACE_XS),
             CustomButton.link(
+              key: const ValueKey('sign-up_btn'),
               text: 'Sign up',
               onTap: () => context.push('/signUp'),
             ),

@@ -12,7 +12,7 @@ import 'reset_password_state.dart';
 final StateNotifierProvider<ResetPasswordNotifier, ResetPasswordState>
     resetPasswordProvider =
     StateNotifierProvider<ResetPasswordNotifier, ResetPasswordState>(
-        (StateNotifierProviderRef<ResetPasswordNotifier, ResetPasswordState> ref) => ResetPasswordNotifier(
+        (Ref<ResetPasswordState> ref) => ResetPasswordNotifier(
               authUsecase: ref.read(authUsecaseProvider),
               router: ref.read(appRouterProvider),
             ));
