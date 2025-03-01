@@ -3,18 +3,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/entities/entity_either.dart';
 import '../../../../core/network/error/failures.dart';
 import '../../../../shared/domain/models/api_response_model.dart';
-import '../../data/repositories/auth_repository.dart';
+import '../../data/repositories/auth_repository_impl.dart';
 import '../../domain/models/user_model.dart';
 
 final AutoDisposeProvider<AuthUsecase> authUsecaseProvider =
     Provider.autoDispose<AuthUsecase>(
-        (AutoDisposeProviderRef<AuthUsecase> ref) {
+        (Ref<AuthUsecase> ref) {
   return AuthUsecase(authRepository: ref.read(authRepositoryProvider));
 });
 
 class AuthUsecase {
   AuthUsecase({required this.authRepository});
-  final AuthRepository authRepository;
+  final AuthRepositoryImpl authRepository;
 
   Future<Either<Failure, UserModel>> logIn(
       {required String email, required String password}) async {
