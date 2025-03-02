@@ -9,8 +9,11 @@
 <h4 align="center">Proyecto base de <a href="https://github.com/karatelabs/karate" target="_blank">Pragma</a>.</h4>
 
 <p align="center">
-  <a href="https://www.oracle.com/java/technologies/javase-jdk11-downloads.html">
-    <img src="https://img.shields.io/badge/Java-11+-orange.svg" alt="Flutter">
+  <a href="https://docs.flutter.dev/release/archive">
+    <img src="https://img.shields.io/badge/Flutter-3.29.0-blue" alt="Flutter">
+  </a>
+  <a href="https://riverpod.dev/es/">
+    <img src="https://img.shields.io/badge/Riverpod-purple" alt="Riverpod">
   </a>
 </p>
 
@@ -23,9 +26,6 @@ Este proyecto es un arquetipo base para aplicaciones Flutter implementadas con C
   <a href="#instalación-y-ejecución">Instalación y ejecución</a> •
   <a href="#autores">Autores</a> •
 </p>
-
-El siguiente GIF es de ejemplo, si tienes uno propio reemplazalo, de lo contrario eliminalo.
-![screenshot](https://raw.githubusercontent.com/amitmerchant1990/electron-markdownify/master/app/img/markdownify.gif)
 
 ## Topicos
 
