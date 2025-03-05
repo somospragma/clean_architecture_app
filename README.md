@@ -64,201 +64,142 @@ Para ejecutar está aplicación, necesitas [Java JDK](https://www.oracle.com/jav
 ```bash
    flutter run
    ```
-## Riverpod como gestor de estado en Flutter
+# Tutorial: Uso de Riverpod en el Proyecto
 
-### ¿Qué es Riverpod?
-
-Riverpod es un gestor de estado para Flutter que se basa en el concepto de proveedores (*providers*). Fue creado por Remi Rousselet, el mismo autor de `provider`, pero con una arquitectura más robusta, segura y flexible.
-
-A diferencia de `provider`, Riverpod es independiente del *BuildContext*, lo que permite un mejor manejo del estado global y facilita la depuración.
-
-### Principales ventajas de Riverpod
-
-✅ **No depende de **: Puedes acceder al estado en cualquier parte de la app sin necesidad de un ``BuildContext``. 
-✅ **Seguridad en el acceso al estado**: Riverpod detecta automáticamente si se intenta acceder a un estado antes de que esté disponible. 
-✅ **Optimización de rendimiento**: Solo se reconstruyen los widgets que dependen de un estado específico. 
-✅ **Escalabilidad**: Facilita la gestión del estado en proyectos grandes con múltiples capas (UI, dominio, infraestructura).
+Este proyecto utiliza **Riverpod** como gestor de estado y proveedor de dependencias. En este tutorial, exploraremos cómo se implementa Riverpod en la autenticación y la configuración de la aplicación.
 
 ---
 
-### Tipos de proveedores (*Providers*) en Riverpod
+## 1. Configuración de Riverpod en la Autenticación
 
-Los *providers* son la base de Riverpod y se utilizan para definir el estado y la lógica de negocio de la aplicación.
+### 1.1. Gestor de Estado para Login (`logInProvider`)
 
-#### 1. `Provider`: Para valores inmutables o de solo lectura
-
-Se usa para exponer valores estáticos o resultados de cálculos sin estado.
+Se utiliza `StateNotifierProvider` para manejar el estado del formulario de inicio de sesión. Esto permite actualizar el estado de manera reactiva y realizar acciones como validación de campos y llamadas a la API.
 
 ```dart
-final greetingProvider = Provider<String>((ref) => 'Hola, Riverpod!');
-
-class GreetingWidget extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final greeting = ref.watch(greetingProvider);
-    return Text(greeting);
-  }
-}
+final StateNotifierProvider<LogInNotifier, LogInState> logInProvider =
+    StateNotifierProvider<LogInNotifier, LogInState>((Ref<LogInState> ref) => LogInNotifier(
+          authUsecase: ref.read(authUsecaseProvider),
+          router: ref.read(appRouterProvider),
+        ));
 ```
 
----
+- **`StateNotifierProvider`**: Provee una instancia de `LogInNotifier`, que maneja el estado del login.
+- **Dependencias**:
+  - `authUsecaseProvider`: Para la lógica de autenticación.
+  - `appRouterProvider`: Para la navegación.
 
-#### 2. `StateProvider`: Para estados simples y mutables
+### 1.2. Repositorio de Autenticación (`authRepositoryProvider`)
 
-Permite manejar estados simples como `bool`, `int`, `String`, etc.
+Se define un `Provider` para gestionar la implementación del repositorio de autenticación.
 
 ```dart
-final counterProvider = StateProvider<int>((ref) => 0);
-
-class CounterWidget extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final counter = ref.watch(counterProvider);
-    return Column(
-      children: [
-        Text('Contador: $counter'),
-        ElevatedButton(
-          onPressed: () => ref.read(counterProvider.notifier).state++,
-          child: Text('Incrementar'),
-        ),
-      ],
-    );
-  }
-}
-```
-
----
-
-#### 3. `StateNotifierProvider`: Para lógica de negocio compleja
-
-Se usa cuando el estado es más complejo y necesita métodos para actualizarse.
-
-```dart
-class CounterNotifier extends StateNotifier<int> {
-  CounterNotifier() : super(0);
-
-  void increment() => state++;
-}
-
-final counterNotifierProvider = StateNotifierProvider<CounterNotifier, int>((ref) {
-  return CounterNotifier();
-});
-
-class CounterNotifierWidget extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final counter = ref.watch(counterNotifierProvider);
-    return Column(
-      children: [
-        Text('Contador: $counter'),
-        ElevatedButton(
-          onPressed: () => ref.read(counterNotifierProvider.notifier).increment(),
-          child: Text('Incrementar'),
-        ),
-      ],
-    );
-  }
-}
-```
-
----
-
-#### 4. `FutureProvider`: Para datos asíncronos (API, BD, etc.)
-
-Se usa para manejar datos obtenidos de una API o base de datos de manera asíncrona.
-
-```dart
-final userProvider = FutureProvider<User>((ref) async {
-  final response = await http.get(Uri.parse('https://jsonplaceholder.typicode.com/users/1'));
-  return User.fromJson(jsonDecode(response.body));
-});
-
-class UserWidget extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(userProvider);
-    
-    return user.when(
-      data: (user) => Text('Usuario: ${user.name}'),
-      loading: () => CircularProgressIndicator(),
-      error: (error, _) => Text('Error: $error'),
-    );
-  }
-}
-```
-
----
-
-#### 5. `StreamProvider`: Para escuchar cambios en tiempo real
-
-Se usa para obtener datos en tiempo real, como Firestore o WebSockets.
-
-```dart
-final timeProvider = StreamProvider<int>((ref) async* {
-  while (true) {
-    await Future.delayed(Duration(seconds: 1));
-    yield DateTime.now().second;
-  }
-});
-
-class TimeWidget extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final time = ref.watch(timeProvider);
-    
-    return time.when(
-      data: (value) => Text('Segundos: $value'),
-      loading: () => CircularProgressIndicator(),
-      error: (error, _) => Text('Error: $error'),
-    );
-  }
-}
-```
-
----
-
-### Cómo usar Riverpod en una aplicación Flutter
-
-#### 1. Agregar la dependencia en `pubspec.yaml`
-
-```yaml
-dependencies:
-  flutter:
-    sdk: flutter
-  flutter_riverpod: ^2.0.0
-```
-
-#### 2. Envolver la aplicación con `ProviderScope`
-
-Para que los *providers* estén disponibles en toda la app, envuelve tu `MaterialApp` con `ProviderScope`.
-
-```dart
-void main() {
-  runApp(ProviderScope(child: MyApp()));
-}
-```
-
----
-
-### Diferencia entre `ref.watch()`, `ref.read()` y `ref.listen()`
-
-| Método                           | Uso                                                             |
-| -------------------------------- | --------------------------------------------------------------- |
-| `ref.watch(provider)`            | Obtiene el valor y se reconstruye cuando cambia.                |
-| `ref.read(provider)`             | Obtiene el valor una sola vez y no se reconstruye.              |
-| `ref.listen(provider, callback)` | Escucha cambios y ejecuta una acción sin reconstruir el widget. |
-
-Ejemplo de `ref.listen()` para mostrar un *SnackBar* en caso de error:
-
-```dart
-ref.listen<AsyncValue<User>>(userProvider, (_, state) {
-  if (state.hasError) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error al cargar usuario')),
-    );
-  }
+final Provider<AuthRepositoryImpl> authRepositoryProvider =
+    Provider<AuthRepositoryImpl>((Ref<AuthRepositoryImpl> ref) {
+  return AuthRepositoryImpl();
 });
 ```
+
+- **`Provider`**: Se usa para crear una instancia del repositorio `AuthRepositoryImpl`.
+- **Inyección de Dependencias**: `ref.read(authRepositoryProvider)` permite acceder a la instancia en otros lugares del código.
+
+### 1.3. Caso de Uso (`authUsecaseProvider`)
+
+Se utiliza `Provider.autoDispose` para que la instancia de `AuthUsecase` se destruya cuando no se necesite, optimizando el uso de memoria.
+
+```dart
+final AutoDisposeProvider<AuthUsecase> authUsecaseProvider =
+    Provider.autoDispose<AuthUsecase>((Ref<AuthUsecase> ref) {
+  return AuthUsecase(authRepository: ref.read(authRepositoryProvider));
+});
+```
+
+- **`autoDispose`**: Libera memoria cuando el provider ya no es usado.
+- **Dependencias**: `authRepositoryProvider` para ejecutar las operaciones de autenticación.
+
+---
+
+## 2. Configuración de la Aplicación con Riverpod
+
+### 2.1. Configuración Principal en `MainApp`
+
+Se utiliza `ConsumerWidget` para acceder a los providers dentro del `build`.
+
+```dart
+class MainApp extends ConsumerWidget {
+  const MainApp({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final GoRouter appRouter = ref.watch(appRouterProvider);
+
+    return ScreenUtilInit(
+        minTextAdapt: true,
+        splitScreenMode: true,
+        builder: (BuildContext context, Widget? child) {
+          return MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            routerConfig: appRouter,
+            theme: AppTheme(isDarkmode: false).getTheme(),
+          );
+        });
+  }
+}
+```
+
+- **`ConsumerWidget`**: Permite leer `appRouterProvider` mediante `ref.watch()`.
+- **Inyección de Dependencias**: `GoRouter` se obtiene desde `appRouterProvider`.
+
+### 2.2. Gestión de Rutas con Riverpod y GoRouter
+
+Se utiliza un `Provider` para manejar la configuración de rutas de la aplicación.
+
+```dart
+final Provider<GoRouter> appRouterProvider = Provider<GoRouter>((Ref<GoRouter> ref) {
+  return GoRouter(
+    initialLocation: '/',
+    routes: <RouteBase>[
+      GoRoute(
+        name: 'logIn',
+        path: '/',
+        builder: (BuildContext context, GoRouterState state) => const LoginPage(),
+      ),
+      GoRoute(
+        name: 'signUp',
+        path: '/signUp',
+        builder: (BuildContext context, GoRouterState state) => const SignUpPage(),
+      ),
+      GoRoute(
+        name: 'home',
+        path: '/home',
+        builder: (BuildContext context, GoRouterState state) => const HomePage(),
+      ),
+      GoRoute(
+        name: 'resetPassword',
+        path: '/resetPassword',
+        builder: (BuildContext context, GoRouterState state) => const ResetPasswordPage(),
+      ),
+    ],
+  );
+});
+```
+
+- **`Provider<GoRouter>`**: Se utiliza para mantener la configuración de rutas accesible desde cualquier parte de la aplicación.
+- **Uso en `MainApp`**: `ref.watch(appRouterProvider)` garantiza que los cambios en las rutas se reflejen en la UI.
+
+---
+
+## Conclusión
+
+En este tutorial, hemos visto cómo Riverpod facilita la gestión del estado en el proyecto:
+
+✅ `StateNotifierProvider` para manejar el estado del login.
+✅ `Provider` para la inyección de dependencias en el repositorio y el caso de uso.
+✅ `Provider<GoRouter>` para la navegación centralizada con `GoRouter`.
+
+Esto mejora la escalabilidad y mantenibilidad del código. ¡Ahora tienes una base sólida para seguir desarrollando con Riverpod! 🚀
+
+
 
 
 ## Autores
